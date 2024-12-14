@@ -1,4 +1,5 @@
 bun.lockb
+convex/_generated
 
 # dependencies
 /node_modules
