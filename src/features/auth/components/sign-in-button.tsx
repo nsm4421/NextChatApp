@@ -4,17 +4,22 @@ import { Button } from "@/components/ui/button";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 
-export function GithubSignInButton() {
+interface Props {
+  provider: "google" | "github";
+  label?: string;
+}
+
+export default function OAuthSignInButton({ provider, label }: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { signIn } = useAuthActions();
 
-  const handleGithubSignIn = async () => {
+  const handleSignIn = async () => {
     try {
       setIsLoading(true);
-      await signIn("github");
+      await signIn(provider);
     } catch (error) {
       console.error(error);
-      alert("sign in with github fails");
+      alert("sign in fails");
     } finally {
       setIsLoading(false);
     }
@@ -25,9 +30,9 @@ export function GithubSignInButton() {
       className="w-full"
       size="lg"
       disabled={isLoading}
-      onClick={handleGithubSignIn}
+      onClick={handleSignIn}
     >
-      Sign In With Github
+      {label || `Sign In With ${provider.toUpperCase()}`}
     </Button>
   );
 }

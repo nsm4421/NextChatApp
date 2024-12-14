@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { AuthFlow } from "../types";
-import { GithubSignInButton } from "./sign-in-button";
+import SignInButton from "./sign-in-button";
 
 interface Props {
   setFlow: Dispatch<SetStateAction<AuthFlow>>;
@@ -60,7 +60,8 @@ export default function SignInForm({ setFlow }: Props) {
       </CardContent>
 
       <CardFooter className="p-0 flex flex-col gap-y-3">
-        <GithubSignInButton />
+        <SignInButton provider={"google"} label="Sign In With Google" />
+        <SignInButton provider={"github"} label="Sign In With Github" />
         <div>
           <p
             className="text-blue-500 cursor-pointer text-sm"
