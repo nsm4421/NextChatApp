@@ -14,15 +14,9 @@ import { ChangeEvent, Dispatch, SetStateAction, use, useState } from "react";
 import { AuthFlow } from "../types";
 
 interface Props {
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
-  isLoading: boolean;
   setFlow: Dispatch<SetStateAction<AuthFlow>>;
 }
-export default function SignUpForm({
-  isLoading,
-  setIsLoading,
-  setFlow,
-}: Props) {
+export default function SignUpForm({ setFlow }: Props) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
@@ -50,7 +44,6 @@ export default function SignUpForm({
       <CardContent className="w-full p-0 my-3">
         <form className="space-y-3 p-0 flex-col w-full">
           <Input
-            disabled={isLoading}
             value={email}
             onChange={handleEmail}
             placeholder="Email"
@@ -58,7 +51,6 @@ export default function SignUpForm({
             required
           />
           <Input
-            disabled={isLoading}
             value={password}
             onChange={handlePassword}
             placeholder="Password"
@@ -66,7 +58,6 @@ export default function SignUpForm({
             required
           />
           <Input
-            disabled={isLoading}
             value={passwordConfirm}
             onChange={handlePasswordConfirm}
             placeholder="Password Confirm"
@@ -74,12 +65,7 @@ export default function SignUpForm({
             required
           />
 
-          <Button
-            type="submit"
-            className="w-full"
-            size="lg"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full" size="lg">
             Submit
           </Button>
         </form>

@@ -9,11 +9,15 @@ import {
 const publicUrlMather = createRouteMatcher(["/auth"]);
 
 export default convexAuthNextjsMiddleware(async (req) => {
-  // 인증없이 접근한 경우, 로그인 페이지로 redirect
-  if (!publicUrlMather(req) && !(await isAuthenticatedNextjs())) {
+  const isAuth = await isAuthenticatedNextjs();
+  const isInAuthPage = publicUrlMather(req);
+  if (!isInAuthPage && !isAuth) {
+    // 인증없이 접근한 경우, 로그인 페이지로 redirect
     return nextjsMiddlewareRedirect(req, "/auth");
+  } else if (isInAuthPage && isAuth) {
+    // 인증되었는데 인증페이지 접근한 경우, 홈화면으로 redirect
+    return nextjsMiddlewareRedirect(req, "/");
   }
-  // TODO : 이미 로그인했는데 인증페이지로 접근한 경우 redirec
 });
 
 export const config = {

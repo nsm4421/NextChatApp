@@ -7,25 +7,12 @@ import SignUpForm from "./sign-up-form";
 
 export function AuthScreen() {
   const [flow, setFlow] = useState<AuthFlow>(AuthFlow.signIn);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (
-    <div className="h-full flex items-center justify-center">
-      <div className="md:h-auto md:w-max[500px]">
-        {flow == AuthFlow.signIn && (
-          <SignInForm
-            setFlow={setFlow}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-          />
-        )}
-        {flow == AuthFlow.signUp && (
-          <SignUpForm
-            setFlow={setFlow}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-          />
-        )}
+    <div className="h-full w-full flex items-center justify-center">
+      <div className="w-1/2 md:h-auto md:w-max[500px]">
+        {flow == AuthFlow.signIn && <SignInForm setFlow={setFlow} />}
+        {flow == AuthFlow.signUp && <SignUpForm setFlow={setFlow} />}
       </div>
     </div>
   );

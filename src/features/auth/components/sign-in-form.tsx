@@ -11,18 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { AuthFlow } from "../types";
+import { GithubSignInButton } from "./sign-in-button";
 
 interface Props {
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
-  isLoading: boolean;
   setFlow: Dispatch<SetStateAction<AuthFlow>>;
 }
 
-export default function SignInForm({
-  isLoading,
-  setIsLoading,
-  setFlow,
-}: Props) {
+export default function SignInForm({ setFlow }: Props) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -47,7 +42,6 @@ export default function SignInForm({
           <Input
             value={email}
             onChange={handleEmail}
-            disabled={isLoading}
             placeholder="Email"
             type="email"
             required
@@ -55,28 +49,26 @@ export default function SignInForm({
           <Input
             value={password}
             onChange={handlePassword}
-            disabled={isLoading}
             placeholder="Password"
             type="password"
             required
           />
-          <Button
-            type="submit"
-            className="w-full"
-            size="lg"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full" size="lg">
             Submit
           </Button>
         </form>
       </CardContent>
-      <CardFooter className="p-0">
-        <p
-          className="text-blue-500 cursor-pointer text-sm"
-          onClick={handleNavigate}
-        >
-          Create Account
-        </p>
+
+      <CardFooter className="p-0 flex flex-col gap-y-3">
+        <GithubSignInButton />
+        <div>
+          <p
+            className="text-blue-500 cursor-pointer text-sm"
+            onClick={handleNavigate}
+          >
+            Create Account
+          </p>
+        </div>
       </CardFooter>
     </Card>
   );
