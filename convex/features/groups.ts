@@ -1,43 +1,112 @@
 import { v } from "convex/values";
 import { mutation, query } from "../_generated/server";
 import { auth } from "../auth";
+import { Doc } from "../_generated/dataModel";
 
+const genJoinCode = () => {
+  const code = Array.from(
+    { length: 6 },
+    () => "0123456789abcedfghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 36)]
+  ).join("");
+  return code;
+};
+
+/**
+ * 현재 로그인한 유저가 포함된 모든 그룹목록
+ * @returns
+ * groups : Doc<"groups">[]
+ */
 export const get = query({
   args: {},
   handler: async (context) => {
-    return await context.db.query("groups").collect();
+    // check auth
+    const uid = await auth.getUserId(context);
+    if (!uid) {
+      throw new Error("UnAthorized");
+    }
+    // find all belonging groups
+    const members = await context.db
+      .query("members")
+      .withIndex("by_uid", (q) => q.eq("uid", uid))
+      .collect();
+    const groupIds = new Set(members.map((item) => item.groupId));
+
+    // fetch groups by id
+    const groups: Doc<"groups">[] = [];
+    for (const groupId of groupIds) {
+      const group = await context.db.get(groupId);
+      if (group) {
+        groups.push(group);
+      }
+    }
+    return groups;
   },
 });
 
+/**
+ * id를 사용해 그룹 조회
+ * @args
+ * groupId : Id<"groups">
+ * @returns
+ * group : Doc<"groups">
+ */
 export const getById = query({
   args: {
     groupId: v.id("groups"),
   },
   handler: async (context, args) => {
+    // check auth
     const uid = await auth.getUserId(context);
     if (!uid) {
       throw new Error("UnAthorized");
     }
-    // TODO : 해당 유저가 그룹 내에 속한 사람인지 검사하기
+    // check whether Included in the Group
+    const memebers = await context.db
+      .query("members")
+      .withIndex("by_uid_group", (q) =>
+        q.eq("uid", uid).eq("groupId", args.groupId)
+      )
+      .unique();
+    if (!memebers) {
+      throw Error("can't access not included group");
+    }
     return await context.db.get(args.groupId);
   },
 });
 
+/**
+ * 그룹 생성하기
+ * @args
+ * title : string
+ * @returns
+ * groupId : Doc<"groups">
+ */
 export const create = mutation({
   args: {
     title: v.string(),
   },
   handler: async (context, args) => {
+    // check auth
     const uid = await auth.getUserId(context);
     if (!uid) {
       throw new Error("UnAthorized");
     }
-    // TODO : 참여코드 만들기
-    const joinCode = "test";
-    return await context.db.insert("groups", {
+
+    // insert on groups table
+    const groupId = await context.db.insert("groups", {
       ...args,
       uid,
-      joinCode,
+      joinCode: genJoinCode(),
     });
+
+    // insert on members table
+    await context.db.insert("members", {
+      uid,
+      groupId,
+      role: "host",
+    });
+
+    // return created group id
+    return groupId;
   },
 });
