@@ -10,7 +10,7 @@ type Status = "initial" | "loading" | "success" | "error";
 type Options = {
   onSuccess?: (data: ResponseType) => void;
   onError?: (error: Error) => void;
-  onSettled?: () => void;
+  onDone?: () => void;
   throwError?: boolean;
 };
 
@@ -45,7 +45,7 @@ export const useCreateGroup = () => {
           throw e;
         }
       } finally {
-        options?.onSettled?.();
+        options?.onDone?.();
       }
     },
     [muation]

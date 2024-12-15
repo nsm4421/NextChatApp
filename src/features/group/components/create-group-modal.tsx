@@ -4,7 +4,6 @@ import { useCreateGroupModal } from "../store/use-create-group-modal";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -13,6 +12,7 @@ import { ChangeEvent, useState } from "react";
 import { useCreateGroup } from "../api/use-create-group";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function CreateGroupModal() {
   const router = useRouter();
@@ -35,8 +35,14 @@ export default function CreateGroupModal() {
         title,
       },
       {
-        onSuccess: (data) => {
-          router.push(`/group/${data}`);
+        onSuccess: (groupId) => {
+          toast.success("group created successfully!");
+          setIsModalVisible(false);
+          router.push(`/group/${groupId}`);
+        },
+        onError: (error) => {
+          toast.error("create group fails");
+          console.error(error);
         },
       }
     );

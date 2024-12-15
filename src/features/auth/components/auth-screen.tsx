@@ -9,29 +9,25 @@ import {
 } from "@/components/ui/card";
 import { useState } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { TriangleAlert } from "lucide-react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 export function AuthScreen() {
   const { signIn } = useAuthActions();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
 
   const handleSignInWithOAuth = (provider: "google" | "github") => async () => {
     try {
       setIsLoading(true);
+      toast.success("login success!");
       await signIn(provider);
     } catch (error) {
       console.error(error);
-      setError(`sign up with ${provider} fails`);
+      toast.success(`sign up with ${provider} fails`);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleClearError = () => {
-    setError("");
   };
 
   return (
@@ -44,15 +40,6 @@ export function AuthScreen() {
           <CardDescription className="my-3">
             you can login with google or github account
           </CardDescription>
-          {error && (
-            <div
-              onClick={handleClearError}
-              className="bg-destructive/10 rounded-md flex items-center text-sm mx-3 px-3 py-2 my-2 gap-x-3"
-            >
-              <TriangleAlert className="size-3" />
-              {error}
-            </div>
-          )}
 
           <Separator className="my-3" />
 
