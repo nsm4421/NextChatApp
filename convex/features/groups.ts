@@ -9,6 +9,20 @@ export const get = query({
   },
 });
 
+export const getById = query({
+  args: {
+    groupId: v.id("groups"),
+  },
+  handler: async (context, args) => {
+    const uid = await auth.getUserId(context);
+    if (!uid) {
+      throw new Error("UnAthorized");
+    }
+    // TODO : 해당 유저가 그룹 내에 속한 사람인지 검사하기
+    return await context.db.get(args.groupId);
+  },
+});
+
 export const create = mutation({
   args: {
     title: v.string(),

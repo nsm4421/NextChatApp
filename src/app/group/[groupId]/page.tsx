@@ -1,9 +1,9 @@
-interface Props {
-  params: {
-    groupId: string;
-  };
-}
+import DisplayGroupScreen from "@/features/group/components/display-group-screen";
 
-export default function GroupPage({ params: { groupId } }: Props) {
-  return <h1>{groupId}</h1>;
+export default function GroupPage() {
+  return (
+    <>
+      <DisplayGroupScreen />
+    </>
+  );
 }
