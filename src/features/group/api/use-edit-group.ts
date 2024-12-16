@@ -3,7 +3,7 @@ import { api } from "../../../../convex/_generated/api";
 import { useCallback, useMemo, useState } from "react";
 import { Id } from "../../../../convex/_generated/dataModel";
 
-type RequestType = { title: string };
+type RequestType = { groupId: Id<"groups">; title: string };
 type ResponseType = Id<"groups"> | null;
 type Status = "initial" | "loading" | "success" | "error";
 
@@ -14,7 +14,7 @@ type Options = {
   throwError?: boolean;
 };
 
-export const useCreateGroup = () => {
+export const useEditGroup = () => {
   const [data, setData] = useState<ResponseType>(null);
   const [status, setStatus] = useState<Status>("initial");
   const isSuccess = useMemo(() => status === "success", [status]);
@@ -24,7 +24,7 @@ export const useCreateGroup = () => {
     () => status === "success" || status === "error",
     [status]
   );
-  const muation = useMutation(api.features.groups.create);
+  const muation = useMutation(api.features.groups.edit);
   const mutate = useCallback(
     async (req: RequestType, options?: Options) => {
       try {

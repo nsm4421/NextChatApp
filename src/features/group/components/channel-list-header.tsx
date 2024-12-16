@@ -1,12 +1,15 @@
 import { Button } from "@/components/ui/button";
+
+import { Doc } from "../../../../convex/_generated/dataModel";
+import { ChevronDown } from "lucide-react";
+import PreferenceModal from "./preference-modal";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import { Doc } from "../../../../convex/_generated/dataModel";
-import { ChevronDown } from "lucide-react";
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
 
 interface Props {
   group: Doc<"groups">;
@@ -14,6 +17,10 @@ interface Props {
 }
 
 export default function ChannelListHeader({ group, isHost }: Props) {
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
+  const handleShowModal = () => setIsModalVisible(true);
+
   return (
     <div className="flex items-center justify-between px-4 h-[50px] gap-1">
       <DropdownMenu>
@@ -48,12 +55,20 @@ export default function ChannelListHeader({ group, isHost }: Props) {
             </DropdownMenuItem>
           )}
           {isHost && (
-            <DropdownMenuItem className="cursor-pointer capitalize flex justify-start items-center bg-slate-200 rounded-lg px-1 py-1">
+            <DropdownMenuItem
+              onClick={handleShowModal}
+              className="cursor-pointer capitalize flex justify-start items-center bg-slate-200 rounded-lg px-1 py-1"
+            >
               <p className="text-md"> Pereference</p>
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+      <PreferenceModal
+        open={isModalVisible}
+        setOpen={setIsModalVisible}
+        title={group.title}
+      />
     </div>
   );
 }

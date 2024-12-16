@@ -110,3 +110,96 @@ export const create = mutation({
     return groupId;
   },
 });
+
+/**
+ * 그룹명 수정하기
+ * @args
+ * title : string
+ * @returns
+ * groupId : Doc<"groups">
+ */
+export const edit = mutation({
+  args: {
+    groupId: v.id("groups"),
+    title: v.string(),
+  },
+  handler: async (context, args) => {
+    // check auth
+    const uid = await auth.getUserId(context);
+    if (!uid) {
+      throw new Error("UnAthorized");
+    }
+
+    // find on current user on members table
+    const member = await context.db
+      .query("members")
+      .withIndex("by_uid_group", (q) =>
+        q.eq("uid", uid).eq("groupId", args.groupId)
+      )
+      .unique();
+
+    if (!member) {
+      throw Error("no member founded");
+    } else if (member.role !== "host") {
+      throw Error("not granted");
+    }
+
+    // update
+    await context.db.patch(args.groupId, {
+      title: args.title,
+    });
+
+    return args.groupId;
+  },
+});
+
+/**
+ * 그룹 삭제하기
+ * @args
+ * title : string
+ * @returns
+ * groupId : Doc<"groups">
+ */
+export const remove = mutation({
+  args: {
+    groupId: v.id("groups"),
+  },
+  handler: async (context, args) => {
+    // check auth
+    const uid = await auth.getUserId(context);
+    if (!uid) {
+      throw new Error("UnAthorized");
+    }
+
+    // find on current user on members table
+    const member = await context.db
+      .query("members")
+      .withIndex("by_uid_group", (q) =>
+        q.eq("uid", uid).eq("groupId", args.groupId)
+      )
+      .unique();
+
+    if (!member) {
+      throw Error("no member founded");
+    } else if (member.role !== "host") {
+      throw Error("not granted");
+    }
+
+    const [members] = await Promise.all([
+      context.db
+        .query("members")
+        .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
+        .collect(),
+    ]);
+
+    // delete members
+    for (const item of members) {
+      await context.db.delete(item._id);
+    }
+
+    // delete group
+    await context.db.delete(args.groupId);
+
+    return args.groupId;
+  },
+});
