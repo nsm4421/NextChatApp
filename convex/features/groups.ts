@@ -22,7 +22,7 @@ export const get = query({
     // check auth
     const uid = await auth.getUserId(context);
     if (!uid) {
-      throw new Error("UnAthorized");
+      return [];
     }
     // find all belonging groups
     const members = await context.db
@@ -58,7 +58,7 @@ export const getById = query({
     // check auth
     const uid = await auth.getUserId(context);
     if (!uid) {
-      throw new Error("UnAthorized");
+      return null;
     }
     // check whether Included in the Group
     const memebers = await context.db
@@ -68,7 +68,7 @@ export const getById = query({
       )
       .unique();
     if (!memebers) {
-      throw Error("can't access not included group");
+      return null;
     }
     return await context.db.get(args.groupId);
   },
@@ -104,6 +104,12 @@ export const create = mutation({
       uid,
       groupId,
       role: "host",
+    });
+
+    // create channel
+    await context.db.insert("channels", {
+      title: "default channel",
+      groupId,
     });
 
     // return created group id
