@@ -23,7 +23,7 @@ export default function CustomToolTip(props: Props) {
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent
           {...tooltipProps}
-          className="bg-black text-white border border-white/5"
+          className="bg-black text-white border border-white/5 rounded-md px-2 py-1"
         >
           <p className="text-xs font-medium">{label}</p>
         </TooltipContent>
